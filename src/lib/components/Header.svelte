@@ -3,5 +3,5 @@
 </script>
 
 <div>
-  <h3>{trackTitle}</h3>
+  <h3 class="text-center">{trackTitle}</h3>
 </div>

@@ -1,29 +1,53 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
+  import {Howl, Howler} from "howler";
   import Header from "./Header.svelte";
   import VolumeSlider from "./VolumeSlider.svelte";
+	import PlayButton from "./PlayButton.svelte";
+	import SkipForward from "./SkipForward.svelte";
+	import SkipBackward from "./SkipBackward.svelte";
 
   export let audioUrl: string;
   export let trackTitle: string;
+  export let skipForwardTimeInSeconds: number = 30;
+  export let skipBackwardTimeInSeconds: number = 15;
 
-  let audioFile: HTMLAudioElement;
+  let audioFile: Howl;
   let currentTime: number;
   let duration: number;
   let playbackSpeed: number;
+  let isPlaying: boolean = false;
+  let seekValue: number;
   let currentVolume: number = 100;
+  let animationId: number;
+
+  const soundStep = () => {
+    currentTime = audioFile.seek() || 0;
+    duration = audioFile.duration()
+
+    if (audioFile.playing()) {
+      animationId = requestAnimationFrame(soundStep.bind(audioFile))
+    }
+  }
 
   onMount(() => {
-    audioFile = new Audio(audioUrl);
+    audioFile = new Howl({
+      src: [audioUrl],
+      html5: true,
+      onplay: () => {
+        duration = audioFile.duration()
+        isPlaying = true;
+        animationId = requestAnimationFrame(soundStep.bind(audioFile))
+      }
+    });
 
-    playbackSpeed = audioFile.playbackRate;
+    playbackSpeed = audioFile.rate()
+  })
 
-    audioFile.addEventListener("loadedmetadata", () => {
-      duration = audioFile.duration;
-    }, false);
-
-    audioFile.addEventListener("timeupdate", () => {
-      currentTime = audioFile.currentTime
-    }, false);
+  onDestroy(() => {
+    if (animationId) {
+      cancelAnimationFrame(animationId)
+    }
   })
 
   const play = (event: Event) => {
@@ -33,33 +57,56 @@
   const pause = (event: Event) => {
     audioFile.pause()
   }
+  
+  const seek = (event: Event) => {
+    if (seekValue) {
+      audioFile.seek(seekValue);
+    }
+  }
+
+  const skipForward = (event: Event) => {
+    audioFile.seek((currentTime || 0) + 30)
+  }
+
+  const skipBackward = (event: Event) => {
+    const targetTime = (currentTime || 0) - 15;
+    if (targetTime >= 0) {
+      audioFile.seek(targetTime);
+    } else {
+      audioFile.seek(0);
+    }
+  }
 
   const setVolume = (value: number) => {
-    audioFile.volume = value;
+    audioFile.volume(value);
     currentVolume = (value * 100)
   }
 
   const setSpeed = (event: Event) => {
     const elem = event.target as HTMLInputElement
     playbackSpeed = parseFloat(elem.value);
-    audioFile.playbackRate = playbackSpeed;
+    audioFile.rate(playbackSpeed)
   }
 </script>
 
 <div class="AudioPlayer flex flex-col w-full">
   <div>
-    <Header {trackTitle} />
-    <hr />
+    <div class="mb-3 py-2">
+      <Header {trackTitle} />
+    </div>
     <div class="">
       <label for="volume" class="block w-32">Volume: ({currentVolume.toFixed(0)}%)</label>
       <VolumeSlider onChange={setVolume}/>
     </div>
   </div>
+
   <div class="AudioPlayer--controls">
-    <button class="border p-1 hover:border-slate-800"
-      on:click|preventDefault={play}>Play</button>
-    <button class="border p-1 hover:border-slate-800"
-      on:click|preventDefault={pause}>Pause</button>
+    <SkipBackward onSkipBackward={skipBackward} {skipBackwardTimeInSeconds} />
+    <PlayButton onPlay={play} onPause={pause} />
+    <SkipForward onSkipForward={skipForward} {skipForwardTimeInSeconds} />
+
+    <input type="number" class="border p-1 hover:border-slate-800"
+      bind:value={seekValue} />
   </div>
   
   <div class="AudioPlayer--timeDisplay">
