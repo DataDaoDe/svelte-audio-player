@@ -53,6 +53,7 @@
 	"types": "./dist/index.d.ts",
 	"type": "module",
 	"dependencies": {
+		"date-fns": "^2.29.3",
 		"howler": "^2.2.3"
 	}
 }

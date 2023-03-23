@@ -6,6 +6,7 @@
 	import PlayButton from "./PlayButton.svelte";
 	import SkipForward from "./SkipForward.svelte";
 	import SkipBackward from "./SkipBackward.svelte";
+	import TimeDisplay from "./TimeDisplay.svelte";
 
   export let audioUrl: string;
   export let trackTitle: string;
@@ -110,6 +111,8 @@
   </div>
   
   <div class="AudioPlayer--timeDisplay">
+    <TimeDisplay bind:timeInSeconds={currentTime} />
+    <TimeDisplay bind:timeInSeconds={duration} />
     {#if currentTime && duration}
       <span class="">{(currentTime).toFixed(3)} / {(duration).toFixed(3)}</span>
     {:else}
