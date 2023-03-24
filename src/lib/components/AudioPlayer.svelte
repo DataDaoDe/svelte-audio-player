@@ -1,12 +1,14 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import {Howl, Howler} from "howler";
+  import { Howl } from "howler";
   import Header from "./Header.svelte";
   import VolumeSlider from "./VolumeSlider.svelte";
 	import PlayButton from "./PlayButton.svelte";
 	import SkipForward from "./SkipForward.svelte";
 	import SkipBackward from "./SkipBackward.svelte";
 	import TimeDisplay from "./TimeDisplay.svelte";
+	import type { PlaylistItem } from "$lib/types";
+	import SpeedSetter from "./SpeedSetter.svelte";
 
   export let audioUrl: string;
   export let trackTitle: string;
@@ -16,7 +18,7 @@
   let audioFile: Howl;
   let currentTime: number;
   let duration: number;
-  let playbackSpeed: number;
+  let playbackSpeed: number = 1.0;
   let isPlaying: boolean = false;
   let seekValue: number;
   let currentVolume: number = 100;
@@ -83,10 +85,8 @@
     currentVolume = (value * 100)
   }
 
-  const setSpeed = (event: Event) => {
-    const elem = event.target as HTMLInputElement
-    playbackSpeed = parseFloat(elem.value);
-    audioFile.rate(playbackSpeed)
+  $: if (audioFile) {
+    audioFile.rate(playbackSpeed);
   }
 </script>
 
@@ -120,9 +120,6 @@
     {/if}
   </div>
   <div class="AudioPlayer--playbackSpeed flex">
-    <label for="set_speed" class="block w-32">Set Speed: ({playbackSpeed})</label>
-    <input 
-      class="w-1/2"
-      type="range" min="0" max="3" step="0.25" bind:value={playbackSpeed} on:input|preventDefault={setSpeed}/>
+    <SpeedSetter bind:speed={playbackSpeed} />
   </div>
 </div>
