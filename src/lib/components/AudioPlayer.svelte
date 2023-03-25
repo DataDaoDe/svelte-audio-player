@@ -53,6 +53,12 @@
         isPlaying = true;
         animationId = requestAnimationFrame(soundStep.bind(audioFile))
       },
+      onpause: () => {
+        isPlaying = false;
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+        }
+      },
       onend: () => {
         isPlaying = false;
         if (loop) {
@@ -183,10 +189,10 @@
       />
     </div>
   </div>
-  <div class="AudioPlayer__Volume w-1/6">
-    <VolumeSlider onChange={setVolume}/>
+  <div class="AudioPlayer__Volume w-1/6 grid content-center border-t border-b border-r bg-slate-100 border-slate-400">
+    <VolumeSlider onChange={setVolume} volume={currentVolume}/>
   </div>
-  <div class="AudioPlayer__AdvancedSettings w-1/6">
+  <div class="AudioPlayer__AdvancedSettings w-1/6 grid content-center border-t border-b border-r border-slate-400 bg-slate-100">
     <SpeedSetter bind:speed={playbackSpeed} />
   </div>
 </div>
