@@ -24,6 +24,7 @@
   const onInternalMouseMove = (event: MouseEvent) => {
     if (dragging) {
       onMoveSlider(value);
+      progresBarPercent = value / totalTimeInSeconds * 100;
     }
   }
 
