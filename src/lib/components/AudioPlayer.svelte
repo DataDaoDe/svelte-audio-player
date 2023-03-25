@@ -9,6 +9,7 @@
 	import TimeDisplay from "./TimeDisplay.svelte";
 	import type { PlaylistItem } from "$lib/types";
 	import SpeedSetter from "./SpeedSetter.svelte";
+	import ProgressBar from "./ProgressBar.svelte";
 
   export let audioUrl: string;
   export let trackTitle: string;
@@ -80,6 +81,11 @@
     }
   }
 
+  const onDragDone = (newValue: number) => {
+    seekValue = newValue
+    audioFile.seek(seekValue);
+  }
+
   const setVolume = (value: number) => {
     audioFile.volume(value);
     currentVolume = (value * 100)
@@ -90,7 +96,12 @@
   }
 </script>
 
-<div class="AudioPlayer flex flex-col w-full">
+<div class="AudioPlayer flex flex-col w-full bg-slate-100">
+  <ProgressBar 
+    currentTimeInSeconds={currentTime}
+    totalTimeInSeconds={duration}
+    {onDragDone}
+    />
   <div>
     <div class="mb-3 py-2">
       <Header {trackTitle} />
