@@ -1,6 +1,6 @@
 export const audioData = [
 	{
-		name: "The Practice of Giving",
+		name: "The Practice of Giving is one of the longest things I've ever written down here",
 		url: "https://download.pariyatti.org/free/_moIbLs95/Dana_The_Practice_of_Giving_single.mp3",
 	},
 	{

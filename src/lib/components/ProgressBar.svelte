@@ -4,13 +4,27 @@
   export let onDragDone: (newTimeValue: number) => void;
   export let onMouseEnter: (event: Event) => void = (_event) => {};
   export let onMouseLeave: (event: Event) => void = (_event) => {};
+  export let onMoveSlider: (timeValue: number) => void = (_event) => {};
 
   let value = currentTimeInSeconds || 0;
   let progresBarPercent = 0;
 
+  let dragging = false;
+
   const onInternalDrag = (event: Event) => {
+    dragging = false;
     onDragDone(value);
     progresBarPercent = value / totalTimeInSeconds * 100;
+  }
+
+  const onInternalStartDrag = (event: Event) => {
+    dragging = true;
+  }
+
+  const onInternalMouseMove = (event: MouseEvent) => {
+    if (dragging) {
+      onMoveSlider(value);
+    }
   }
 
   $: progresBarPercent = (currentTimeInSeconds / totalTimeInSeconds) * 100;
@@ -26,7 +40,22 @@
       max={totalTimeInSeconds}
       bind:value={value}
       on:mouseenter={onMouseEnter}
+      on:mousemove={onInternalMouseMove}
       on:mouseleave={onMouseLeave}
+      min={0} 
+      on:mousedown={onInternalStartDrag}
+      on:mouseup={onInternalDrag} 
+      />
+  </div>
+{:else}
+  <div id="audio-progress--noTimeValue" class="audio-progress--noTimeValues">
+    <input
+      class="w-full bg-slate-50"
+      type="range"
+      style="background: linear-gradient(to right, #737373 0%, #737373 0%, #e5e5e5 0%, #e5e5e5 100%)"
+      max={100}
+      disabled
+      value={0}
       min={0} on:mouseup={onInternalDrag} />
   </div>
 {/if}

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { FormEventHandler } from "svelte/types"
 
   export let onChange: (newValue: number) => void;
 
@@ -12,4 +11,10 @@
 
 <input 
   on:input|preventDefault={setVolumeInternal}
-  type="range" min="0" max="100" value="100" id="AudioPlayer--volumeSlider">
+  type="range"
+  class="w-full"
+  min="0"
+  max="100"
+  value="100"
+  id="AudioPlayer--volumeSlider"
+>

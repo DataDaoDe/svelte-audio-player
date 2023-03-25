@@ -19,7 +19,7 @@
   $: secondsDisplay = String(seconds).padStart(2, '0')
 </script>
 
-<div>
+<div class="text-sm text-gray-400 inline">
   <span class="hours">{hoursDisplay}</span>
   <span class="sep">:</span>
   <span class="minutes">{minutesDisplay}</span>
