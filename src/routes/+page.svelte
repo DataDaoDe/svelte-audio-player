@@ -1,5 +1,5 @@
 <script>
-  import AudioPlayer from "../lib/components/AudioPlayer.svelte";
+  import { AudioPlayer } from "../lib";
 
   import { audioData } from "../data/audioData";
 </script>
